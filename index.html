@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Sudoku By Calvin Rempel</title>
+        <meta name="viewport" content="width=580, user-scalable=no, initial-scale=1">
+        <link rel='stylesheet' type='text/css' media='screen' href='style.css' />
+        <link rel='stylesheet' type='text/css' media='print' href='print-style.css' />
+        <script src='js/sudoku.min.js'></script>
+        <!-- Non-Minified, Seperated Javascript files for development purposes -->
+        <!--script src='js/sudoku-util-functions.js'></script>
+        <script src='js/SudokuBoard.js'></script>
+        <script src='js/SudokuSolver.js'></script>
+        <script src='js/SudokuGenerator.js'></script>
+        <script src='js/SudokuGame.js'></script-->
+    </head>
+
+    <body>
+        <!-- Sudoku Game Container -->
+        <div id='sudoku-game'>
+            <img id='logo' src='images/logo.png' alt='Sudoku By Calvin' />
+        
+            <!-- Background Overlay -->
+            <div id='bg-overlay'></div>
+            
+            <!-- Sudoku Game Main Menu -->
+            <div id='main-menu'>
+                <ul class='menu'>
+                    <li>
+                        <a href='#' id='do-sudoku-button' class='button' title='Do a Sudoku!'>
+                            Play a Random Sudoku!
+                        </a>
+                    </li>
+                    <li>
+                        <a href='#' id='solver-button' class='button' title='Puzzle Solver'>
+                            Puzzle Solver
+                        </a>
+                    </li>
+                    <li><a href='#' id='help-button' class='button' title='Help'>Help</a></li>
+                </ul>
+            </div>
+            
+            <!-- Pause DIALOG -->
+            <div id='pause-overlay' class='dialog'>
+                <div class='background'></div>
+                <div class='contents'>
+                    <p>Paused</p>
+                    <a href='#' id='resume-button' class='button' title='Resume'>Resume</a>
+                </div>
+            </div>
+            
+            <!-- Main Menu Confirmation DIALOG -->
+            <div id='return-to-menu-screen' class='dialog'>
+                <div class='background'></div>
+                <div class='contents'>
+                    <p>
+                        Are you sure you want to return to the Main Menu?<br />
+                        Your progress will be lost.
+                    </p>
+                    <ul class='menu'>
+                        <li>
+                            <a href='#' id='return-to-menu-button' class='button'
+                               title='Return to Menu'>
+                                Main Menu
+                            </a>
+                        </li>
+                        <li>
+                            <a href='#' id='print-button' class='button'
+                               title='Print Puzzle'>
+                                Print Puzzle
+                            </a>
+                        </li>
+                        <li>
+                            <a href='#' id='cancel-return-button' class='button' title='Cancel'>
+                                Back to Puzzle
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Puzzle Completion DIALOG -->
+            <div id='completion-screen' class='dialog'>
+                <div class='background'></div>
+                <div class='contents'>
+                    <p>You Completed the Puzzle In:</p>
+                    <span id='completion-time'></span>
+                    <a href='#' id='main-menu-button' class='button' title='Return to Main Menu'>
+                        Return to Menu
+                    </a>
+                </div>
+            </div>
+            
+            <!-- CLEAR SOLVER SUDOKU DIALOG -->
+            <div id='clear-sudoku-screen' class='dialog'>
+                <div class='background'></div>
+                <div class='contents'>
+                    <p>
+                        Clear the Puzzle?
+                    </p>
+                    <ul class='menu'>
+                        <li>
+                            <a href='#' id='clear-solved-button' class='button'
+                                title='Clear Solved'>
+                                Clear Solved Squares
+                            </a>
+                        </li>
+                        <li>
+                            <a href='#' id='clear-all-button' class='button'
+                               title='Clear All'>
+                                Clear All
+                            </a>
+                        </li>
+                        <li>
+                            <a href='#' id='cancel-clear-button' class='button' title='Cancel'>
+                                Cancel
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Puzzle Parameter Screen -->
+            <div id='puzzle-parameter-screen'>
+                <ul class='menu'>
+                    <li>
+                        <div id='show-incorrect' class='checkbox'>
+                            <div class='unchecked'></div>
+                        </div>
+                        <span class='checkbox-label'>Highlight Incorrect Answers</span>
+                    </li>
+                    <li>
+                        <div id='minimal-puzzle-checkbox' class='checkbox'>
+                            <div class='unchecked'></div>
+                        </div>
+                        <span class='checkbox-label'>Ensure Puzzle is Irreducible</span>
+                    </li>
+                    <li>
+                        <a href='#' id='generate-puzzle-button' class='button'
+                           title='Generate Puzzle'>
+                            Generate Puzzle
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            
+            <!-- Puzzle Generating Screen -->
+            <div id='working-screen'>
+                <p>Please Wait a Moment!<br />
+                    <span>I'm making life difficult for you!</span>
+                </p>
+                <img src='images/working.gif' alt='working' />
+            </div>
+            
+            <!-- Sudoku Play Screen -->
+            <div id='play-screen'>
+                <div class='control-bar'>
+                    <span class='info-container'>
+                        <div class="background"></div>
+                        <span id='time' class='info'></span>
+                    </span>
+                    <a href='#' id='pause-button' class='button' title='Pause'>Pause</a>
+                    <a href='#' id='menu-button' class='button' title='Main Menu'>Menu</a>
+                </div>
+                <div id='playable-sudoku' class='sudoku-board'></div>
+            </div>
+            
+            <!-- Sudoku Solver Screen -->
+            <div id='solver-screen'>
+                <div class='control-bar'>
+                    <a href='#' id='solve-button' class='button' title='Solve'>Solve!</a>
+                    <a href='#' id='clear-menu-button' class='button' title='Clear'>Clear</a>
+                    <a href='#' id='menu-button-solver' class='button' title='Main Menu'>
+                        Menu
+                    </a>
+                    <br />
+                    <span class='info-container'>
+                        <div class="background"></div>
+                        <span id='solve-message' class='info'></span>
+                    </span>
+                </div>
+                <div id='solver-sudoku' class='sudoku-board'></div>
+            </div>
+            
+            <!-- Help Screen -->
+            <div id='help-screen'>
+                <div class='control-bar'>
+                    <a href='#' id='help-menu-button' class='button' title='Solve'>Main Menu</a>
+                </div>
+                <div id='help-container'>
+                    <div class='background'></div>
+                    <div class='contents'>
+                        <div id='help-navigation'>
+                            <a href='#help-section-play' title='Read: Playing Sudoku'>
+                                How to Play
+                            </a>
+                            <a href='#help-section-solve' title='Read: Puzzle Solver'>
+                                Using the Puzzle Solver
+                            </a>
+                            <a href='#help-section-create' title='Read: Create a Puzzle'>
+                                Create a Puzzle
+                            </a>
+                        </div>
+                        
+                        <div id='help-contents'>
+                            <div id='help-section-overview' class='help-section'>
+                                <h3>Sudoku Overview</h3>
+                                <p>
+                                    Sudoku is a logic puzzle game consisting of nine symbols (the
+                                    number 1-9) and 81 squares in a 9x9 grid. The objective is to
+                                    fill each square with a symbol such that every row, column, and
+                                    3x3 region contains exactly one of each symbol.
+                                </p>
+                                
+                                <img src='images/example-sudoku.png' alt='Example Sudoku' />
+                                
+                                <p>
+                                    Sudoku puzzles come with several of the grid squares pre-filled
+                                    with symbols that must be used to deduce the remaining squares.
+                                    Good Sudoku puzzles have only one possible solution. If a Sudoku
+                                    puzzle is created where removing any of the pre-filled squares
+                                    would result in the puzzle having multiple solutions, it is said
+                                    to be "irreducible" or a "minimal puzzle".
+                                </p>
+                            </div>
+                        
+                            <div id='help-section-play' class='help-section'>
+                                <h3>How to Play</h3>
+                                    <p>
+                                        There are various resources online that give tips on how
+                                        to complete a Sudoku puzzle. This section will only
+                                        provide information on using this Sudoku program.
+                                    </p>
+                                
+                                    <h4>Setting up a Puzzle</h4>
+                                    <div class='help-sub-section'>
+                                        <p>
+                                            From the <span class='screen'> Main Menu</span> click
+                                            <span class='click'>Play a Random Sudoku</span>. You
+                                            will be taken to the <span class='screen'>Puzzle Options
+                                            </span> screen where you can choose how you wish to play
+                                            Sudoku.
+                                        </p>
+                                        
+                                        <img src='images/puzzle-options.png' alt='Puzzle Options' />
+                                        
+                                        <ul>
+                                            <li>
+                                                <span class='list-heading'>
+                                                    Highlight Incorrect Answers
+                                                </span>
+                                                <p>
+                                                    If selected, incorrect answers will be marked
+                                                    with a different colour as you enter them.
+                                                </p>
+                                            </li>
+                                            <li>
+                                                <span class='list-heading'>
+                                                    Ensure Puzzle is Irreducible
+                                                </span>
+                                                <p>
+                                                    If selected, the generated puzzle will be
+                                                    guaranteed to have the property that removing
+                                                    any of the pre-filled numbers would result in the
+                                                    puzzle having multiple solutions.
+                                                </p>
+                                            </li>
+                                        </ul>
+                                        <p>
+                                            Click <span class='click'>Generate Puzzle</span> to be
+                                            taken to the <span class='screen'>Play</span> screen.
+                                        </p>
+                                    </div>
+                                    
+                                    <h4>Playing Sudoku</h4>
+                                    <div class='help-sub-section'>
+                                        <p>
+                                            The <span class='screen'>Play</span> screen is shown
+                                            below.
+                                        </p>
+                                        
+                                        <img src='images/play-screen.png' alt='Play Screen' />
+                                        
+                                        <p>
+                                            A timer <span class='note'>(show in the top left)</span>
+                                            will begin as soon as the puzzle is generated. You can
+                                            pause the timer at any time by clicking
+                                            <span class='click'>Pause</span>. Clicking
+                                            <span class='click'>Menu</span> will also pause the
+                                            timer while the menu is open.
+                                        </p>
+                                        <p>
+                                            To enter values into a square, click in the centre and
+                                            type one of the numbers 1-9. Invalid values will be
+                                            rejected. If <span class='note'>Show Incorrect Answers
+                                            </span> was selected, and your answer was not correct,
+                                            the squares' colour will change indicating a wrong
+                                            answer.
+                                        </p>
+                                        <p>
+                                            To make a note in a square, click in the top region of
+                                            the square and type your note.
+                                        </p>
+                                        
+                                        <img src='images/note-example.png' alt='Note Example' />
+                                        
+                                        <p>
+                                            When the puzzle is finished correctly, a pop-up will
+                                            appear showing a congratulatory message and the
+                                            completion time.
+                                        </p>
+                                    </div>
+                            </div>
+                            
+                            <div id='help-section-solve' class='help-section'>
+                                <h3>Using the Puzzle Solver</h3>
+                                <p>
+                                    The Puzzle Solver allows you to find solutions to arbitrary
+                                    Sudoku Puzzles. It is accessed from the <span class='screen'>
+                                    Main Menu</span> by clicking <span class='click'>Puzzle Solver
+                                    </span>.
+                                </p>
+                                
+                                <img src='images/solver-screen.png' alt='Puzzle Solver' />
+                                
+                                <h4>Adding Numbers to the Puzzle</h4>
+                                <div class='help-sub-section'>
+                                    <p>
+                                        Adding numbers to the empty Sudoku grid is easy! Simply
+                                        click in the desired square and type one of the values from
+                                        1-9. Invalid values will be rejected.
+                                    </p>
+                                </div>
+                                
+                                <h4>Finding Solutions</h4>
+                                <div class='help-sub-section'>
+                                    <p>
+                                        To find a solution to the puzzle, click the
+                                        <span class='click'>Solve!</span> button. The information
+                                        box will inform you if there are 0, 1, or more solutions to
+                                        the puzzle. If a solution exists, it will be placed on the
+                                        board. Numbers that have been added by the solver will have
+                                        a different background and font colour from those entered
+                                        by the user.
+                                    </p>
+                                    
+                                    <img src='images/solved-board.png' alt='Solved Board' />
+                                    
+                                    <p>
+                                        The puzzle can still be altered after it has been solved!
+                                        Simply click in the desired square and change it's value.
+                                    </p>
+                                </div>
+                                
+                                <h4>Clearing the Sudoku Grid</h4>
+                                <div class='help-sub-section'>
+                                    <p>
+                                        Numbers can be removed from the Sudoku grid quickly by
+                                        clicking the <span class='click'>Clear</span> button. Doing
+                                        so will open the <span class='screen'>Clear</span> pop-up.
+                                    </p>
+                                    
+                                    <img src='images/clear-popup.png' alt='Clear Pop-Up' />
+                                    
+                                    <ul>
+                                        <li>
+                                            <span class='list-heading'>
+                                                Clear Solved Squares
+                                            </span>
+                                            <p>
+                                                Clicking this button will remove all of the numbers
+                                                that were filled in by the solver.
+                                            </p>
+                                        </li>
+                                        <li>
+                                            <span class='list-heading'>
+                                                Clear All
+                                            </span>
+                                            <p>
+                                                Clicking this button will remove all numbers from
+                                                the Sudoku grid.
+                                            </p>
+                                        </li>
+                                        <li>
+                                            <span class='list-heading'>
+                                                Cancel
+                                            </span>
+                                            <p>
+                                                Clicking this button will close the
+                                                <span class='screen'>Clear</span> pop-up without
+                                                removing any numbers from the Sudoku grid.
+                                            </p>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                            
+                            <div id='help-section-create' class='help-section'>
+                                <h3>Create a Puzzle</h3>
+                                <p>
+                                    This Sudoku program can be used to create your own print-out
+                                    Sudoku puzzles.
+                                </p>
+                                
+                                <h4>Generating a Random Puzzle</h4>
+                                <div class='help-sub-section'>
+                                    <p>
+                                        The built in puzzle generator can be used to create your
+                                        own puzzles. Refer to the <span class='topic'>Setting up a
+                                        Puzzle</span> section of <span class='topic'>How To Play
+                                        </span> for more information.
+                                    </p>
+                                </div>
+                                
+                                <h4>Creating Your Own Puzzle</h4>
+                                <div class='help-sub-section'>
+                                    <p>
+                                        The <span class='screen'>Puzzle Solver</span> can be used
+                                        to create your own puzzles. Refer to <span class='topic'>
+                                        Using the Puzzle Solver</span> for more information.
+                                    </p>
+                                    <p>
+                                        For best results:
+                                    </p>
+                                    <ul>
+                                        <li>
+                                            <span class='list-heading'>
+                                                Make a Puzzle with a Unique Solution
+                                            </span>
+                                            <p>
+                                                Use the solver to check if the puzzle has a unique
+                                                solution.
+                                            </p>
+                                        </li>
+                                        <li>
+                                            <span class='list-heading'>
+                                                Clear Solved Squares
+                                            </span>
+                                            <p>
+                                                Clear Solved Squares before printing to leave behind
+                                                only the designated squares.
+                                            </p>
+                                        </li>
+                                        <li>
+                                            <span class='list-heading'>
+                                                Make it Pretty!
+                                            </span>
+                                            <p>
+                                                Most Sudoku puzzles have pre-filled numbers placed
+                                                symmetrically on the grid, providing an
+                                                aesthetically pleasing puzzle. Be creative with
+                                                patterns to create a nice looking Sudoku!
+                                            </p>
+                                        </li>
+                                    </ul>
+                                </div>
+                                
+                                <h4>Printing a Puzzle</h4>
+                                <div class='help-sub-section'>
+                                    <p>
+                                        A puzzle can be printed from either the
+                                        <span class='screen'>Play</span> screen or the
+                                        <span class='screen'>Puzzle Solver</span> screen. To do so,
+                                        click the <span class='click'>Menu</span> button followed by
+                                        the <span class='click'>Print Puzzle</span> button.
+                                    </p>
+                                    <img src='images/print.png' alt='Print' />
+                                    <p>
+                                        Follow your computers print-wizard to print the puzzle.
+                                    </p>
+                                </div>
+                            </div>
+                            
+                            <a href='#help-section-overview' id='help-nav-to-top' title='To Top'>
+                                Top
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <div>
+                <div class='content'>
+                    Created By Calvin Rempel.<br />
+                    Visit <a href='http://www.calvinrempel.com/project.php?p=sudoku'
+                    title='CalvinRempel.com'>CalvinRempel.com</a> for more information.
+                </div>
+                <div class='background'></div>
+            </div>
+        </footer>
+    </body>
+    
+    <script>
+        var elements = {
+            container : document.getElementById( 'sudoku-game' ),
+            overlay : document.getElementById( 'bg-overlay' ),
+            mainMenu : document.getElementById( 'main-menu' ),
+            generateButton : document.getElementById( 'do-sudoku-button' ),
+            solverButton : document.getElementById( 'solver-button' ),
+            helpButton : document.getElementById( 'help-button' ),
+            pauseScreen : document.getElementById( 'pause-overlay' ),
+            resumeButton : document.getElementById( 'resume-button' ),
+            returnToMenu : document.getElementById( 'return-to-menu-screen' ),
+            printButton : document.getElementById( 'print-button' ),
+            confirmReturnButton : document.getElementById( 'return-to-menu-button' ),
+            cancelReturnButton : document.getElementById( 'cancel-return-button' ),
+            puzzleParamScreen : document.getElementById( 'puzzle-parameter-screen' ),
+            showIncorrectCheckbox : document.getElementById( 'show-incorrect' ),
+            minPuzzleCheckbox : document.getElementById( 'minimal-puzzle-checkbox' ),
+            generatePuzzleButton : document.getElementById( 'generate-puzzle-button' ),
+            workingScreen : document.getElementById( 'working-screen' ),
+            playScreen : document.getElementById( 'play-screen' ),
+            timeDisplay : document.getElementById( 'time' ),
+            pauseButton : document.getElementById( 'pause-button' ),
+            menuButton : document.getElementById( 'menu-button' ),
+            playableSudoku : document.getElementById( 'playable-sudoku' ),
+            sudokuBoards : document.getElementsByClassName( 'sudoku-board' ),
+            completionScreen : document.getElementById( 'completion-screen' ),
+            completionButton : document.getElementById( 'main-menu-button' ),
+            completionTime : document.getElementById( 'completion-time' ),
+            solverScreen : document.getElementById( 'solver-screen' ),
+            solveMessage : document.getElementById( 'solve-message' ),
+            solveButton : document.getElementById( 'solve-button' ),
+            solverMenuButton : document.getElementById( 'menu-button-solver' ),
+            solverSudoku : document.getElementById( 'solver-sudoku' ),
+            clearButton : document.getElementById( 'clear-menu-button' ),
+            clearScreen : document.getElementById( 'clear-sudoku-screen' ),
+            clearAllButton : document.getElementById( 'clear-all-button' ),
+            clearSolvedButton : document.getElementById( 'clear-solved-button' ),
+            cancelClearButton : document.getElementById( 'cancel-clear-button' ),
+            helpScreen : document.getElementById( 'help-screen' ),
+            helpMenuButton : document.getElementById( 'help-menu-button' )
+        };
+
+        var sudokuGame = new SudokuGame( elements );
+    </script>
+</html>

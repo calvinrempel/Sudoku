@@ -1,0 +1,60 @@
+.control-bar, #logo, footer, .dialog {
+    display: none !important;
+}
+
+.control-bar .info-container {
+    display: none !important;
+}
+
+.sudoku-board {
+    width: 480px;
+    background: black;
+    font-size: 18pt;
+    display: block;
+    margin: 0 auto;
+}
+
+.sudoku-board table {
+    border-spacing: 2px;
+}
+
+.sudoku-board td {
+    background: white; 
+    padding: 0px;
+    text-align: center;
+    width: 52px;
+    height: 52px;
+    position: relative;
+}
+
+.sudoku-board input.scratch {
+    display: none;
+}
+
+.sudoku-board input.answer {
+    width: 36px;
+    height: 36px;
+    border: 0;
+    text-align: center;
+    font-size: 18pt;
+    font-weight: normal;
+    color: black;
+}
+
+.sudoku-board td.horizontal-divider {
+    width: 2px;
+    background: black;
+}
+
+.sudoku-board tr.vertical-divider {
+    height: 2px;
+    background: black;
+}
+
+.sudoku-board td.wrong {
+    color: white;
+}
+
+.sudoku-board td.wrong input {
+    color: white;
+}
